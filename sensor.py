@@ -4,7 +4,7 @@ import traceback,sys
   
 t0 = 0.0 #milis
 t1 = 0.0 #milis
-sensor_dist = 0.1 #meters
+sensor_dist = 0.3 #meters
 
 def interupt_sensor1():
     global t0  
@@ -29,10 +29,10 @@ def wait_sensors():
           
         # raspi is now not looking for falling but rising edge. so if the digital pin on arduino goes high it triggers the raspi  
         try:  
-            GPIO.wait_for_edge(23, GPIO.FALLING)  
+            GPIO.wait_for_edge(25, GPIO.FALLING)  
 #            print "\nRising edge detected."  
             interupt_sensor1()
-            GPIO.wait_for_edge(25, GPIO.FALLING)  
+            GPIO.wait_for_edge(23, GPIO.FALLING)  
             interupt_sensor2()
 #            print t1-t0
             print  3.6*((sensor_dist)/((t1-t0)/1000.0))
