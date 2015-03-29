@@ -49,13 +49,13 @@ def calculate_pin_count(impact_image):
         
         if calc_pixels > pin_rgb_sum_count_epsilon:
             pins += 1
-            if config.DEBUG:
-                cv2.rectangle(sceneCopy,(pin_bbox[0],pin_bbox[1]),(pin_bbox[0]+pin_bbox[2],pin_bbox[1]+pin_bbox[3]),(0,255,0),1)
-                cv2.imshow('image',sceneCopy)
+#            if config.DEBUG:
+#                cv2.rectangle(sceneCopy,(pin_bbox[0],pin_bbox[1]),(pin_bbox[0]+pin_bbox[2],pin_bbox[1]+pin_bbox[3]),(0,255,0),1)
+#                cv2.imshow('image',sceneCopy)
     if config.DEBUG:
         print 'there are %d pins' % pins
         #cv2.imshow('after impact',impact_image)
-        cv2.waitKey(0)
+#        cv2.waitKey(0)
     
     return pins
 

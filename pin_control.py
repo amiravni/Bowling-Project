@@ -28,9 +28,10 @@ def send_pin_count():
 
 
 def calc_ball_impact_time(ball_speed_ms):
-    dist = config.DIST_CAMERA_PINS #meters to the pins
-    return dist/ball_speed_ms
-
+    if ball_speed_ms is not None:
+        dist = config.DIST_CAMERA_PINS #meters to the pins
+        return dist/ball_speed_ms
+    return 0
    
 
 def init():
@@ -40,8 +41,8 @@ def init():
         sensor.init()
         camera.init()
     
-photos_folder = '../bowling_pins_photos/'
-scene_id = 4 
+photos_folder = '../bowling/'
+scene_id = 10
 image_scheme = "images%03d.jpg"
 
 def create_photo_path(folder,scene,id):
@@ -56,7 +57,7 @@ def main():
     
     if config.DEBUG:
         speed = 24 #kmh
-        impact_image = cv2.imread(create_photo_path(photos_folder,4,19))
+        impact_image = cv2.imread(create_photo_path(photos_folder,10,19))
         pin_count = calculate_pins.calculate_pin_count(impact_image)
         pin_control_comm.send_pin_count(pin_count,speed)
     else:
@@ -66,7 +67,7 @@ def main():
             
             #get the speed of the ball
             ms = sensor.wait_sensors()
-            
+
             #calc the time to start capturing the ball impact
             print "taking a series of pictures"
             time_to_impact = calc_ball_impact_time(ms)
@@ -78,6 +79,6 @@ def main():
 
             #capture a photo after impact config.CAPTURE_AFTER_IMPACT_TIMEOUT seconds after
             print "capture a photo"
-            camera.capture_image(config.CAPTURE_AFTER_IMPACT_TIMEOUT)
+            camera.capture_image_by_time(config.CAPTURE_AFTER_IMPACT_TIMEOUT)
 if __name__ == "__main__":
     main()

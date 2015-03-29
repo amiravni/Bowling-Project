@@ -31,15 +31,16 @@ def interupt_sensor2():
 def wait_sensors():
 
         try:  
+            init()
             GPIO.wait_for_edge(config.RPI_GPIO_SENSOR1_PIN, GPIO.FALLING)  
             interupt_sensor1()
             GPIO.wait_for_edge(config.RPI_GPIO_SENSOR2_PIN, GPIO.FALLING)  
             interupt_sensor2()
-
+            print t0,t1
+            
             print  ball_speed_kmh(t0,t1)
             GPIO.cleanup()
             return ball_speed_ms(t0,t1)
-	    
         except:  
             print "something happend..."  
             GPIO.cleanup()       # clean up GPIO on CTRL+C exit  
