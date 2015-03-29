@@ -7,8 +7,7 @@ import calculate_pins
 if not config.DEBUG:
     import camera
     import sensor
-else:
-    import cv2
+import cv2
 
     
 def check_for_foul():
