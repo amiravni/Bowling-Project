@@ -67,13 +67,14 @@ def main():
         pin_count = calculate_pins.calculate_pin_count(impact_image)
         pin_control_comm.send_pin_count(pin_count,speed)
     else:
-        camera.capture_image('base_image.jpg')
+	time.sleep(5)
+        camera.capture_image('base_image')
         base_image = cv2.imread('base_image.jpg')
 
-        cv2.imwrite('base_image_q50.jpg',base_image,[int(cv2.IMWRITE_JPEG_QUALITY), 50])
-        base_image_50 = cv2.imread('base_image_q50.jpg')
+        cv2.imwrite('base_image_comp.jpg',base_image,[int(cv2.IMWRITE_JPEG_QUALITY), 70])
+        base_image_comp = open('base_image_comp.jpg','rb').read()
         
-        pin_control_comm.send_jpeg_image(base_image_50.tostring())
+        pin_control_comm.send_jpeg_image(base_image_comp)
         
         while True:
             print "ready for some balls"
