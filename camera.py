@@ -14,22 +14,22 @@ def init():
     camera.start_preview()
 
 
-def capture_image():
+def capture_image(name):
     if camera is None:
         return
     print time.time()
 
-    camera.capture_sequence(([ 'after_impact.jpg' ] ), use_video_port=True)
+    camera.capture_sequence(([ '%s.jpg' % name] ), use_video_port=True)
     
     print time.time()
 
-def capture_image_by_time(time_sec):
+def capture_image_by_time(name,time_sec):
     if camera is None:
         return
     t0 = time.time()
     while time.time() - t0 < time_sec:
         time.sleep(0.001)
-    capture_image()
+    capture_image(name)
 
 def capture_image_sequence_time(time_sec):
     global camera

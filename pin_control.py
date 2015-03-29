@@ -55,12 +55,26 @@ def main():
     init()
     
     if config.DEBUG:
+    
+        base_image = cv2.imread('base_image.jpg')
+        cv2.imwrite('base_image_comp.jpg',base_image,[int(cv2.IMWRITE_JPEG_QUALITY), 50])
+        base_image_comp = open('base_image_comp.jpg','rb').read()
+        print len(base_image_comp)
+        pin_control_comm.send_jpeg_image(base_image_comp)
+    
         speed = 24.51234 #kmh
         impact_image = cv2.imread(create_photo_path(photos_folder,10,19))
         pin_count = calculate_pins.calculate_pin_count(impact_image)
         pin_control_comm.send_pin_count(pin_count,speed)
     else:
+        camera.capture_image('base_image.jpg')
+        base_image = cv2.imread('base_image.jpg')
 
+        cv2.imwrite('base_image_q50.jpg',base_image,[int(cv2.IMWRITE_JPEG_QUALITY), 50])
+        base_image_50 = cv2.imread('base_image_q50.jpg')
+        
+        pin_control_comm.send_jpeg_image(base_image_50.tostring())
+        
         while True:
             print "ready for some balls"
             
@@ -78,7 +92,7 @@ def main():
 
             #capture a photo after impact config.CAPTURE_AFTER_IMPACT_TIMEOUT seconds after
             print "capture a photo"
-            camera.capture_image_by_time(config.CAPTURE_AFTER_IMPACT_TIMEOUT)
+            camera.capture_image_by_time('after_impact.jpg',config.CAPTURE_AFTER_IMPACT_TIMEOUT)
             impact_image = cv2.imread("after_impact.jpg")
             pin_count = calculate_pins.calculate_pin_count(impact_image)
             pin_control_comm.send_pin_count(pin_count,kmh)

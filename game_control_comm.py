@@ -31,12 +31,6 @@ def recv_msg(sock_fd):
     msg,addr = sock_fd.recvfrom(64*1024)
     return msg
 
-def send_pin_count(pin_count):
-    send_msg(pin_count_socket,protocol.encode_pin_count_msg(pin_count),config.COMM_PIN_COUNT_PORT)
-    
-def send_jpeg_image(jpeg_image):
-    sock.sendto(image_socket,protocol.encode_jpeg_image(jpeg_image),config.COMM_IMAGE_PORT)
-
 def main():
     global pin_count_socket
     global image_socket
@@ -51,6 +45,12 @@ def main():
             pin_count,speed = protocol.decode_pin_count_msg(pin_msg)
             print "Pin count is : %d and speed is : %f" % (pin_count,speed)
 
+        if is_ready(image_socket):
+            img_msg = recv_msg(image_socket)
+            img = protocol.decode_jpeg_image(img_msg)
+            img_fd = open('base_image_game_control.jpg','wb')
+            img_fd.write(img)
+            img_fd.close()
         time.sleep(0.01)
 
 if __name__ == "__main__":
