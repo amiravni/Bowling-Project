@@ -1,21 +1,40 @@
 import camera
 import sensor
 import time
+import config
 
-dist = 2.0 #meters to the pins
+
+def calc_ball_impact_time(ball_speed_ms):
+    dist = config.DIST_CAMERA_PINS #meters to the pins
+    return dist/ball_speed_ms
+
+def init():
+    sensor.init()
+    camera.init()
 
 def main():
 
+    init()
 
     while True:
-	print "ready for some balls"
+        print "ready for some balls"
+        
+        #get the speed of the ball
         ms = sensor.wait_sensors()
-#	ms = 4
-	print "taking a video"	
-	time_to_record = 1 if dist/ms < 1.0 else dist/ms
-        camera.capture_video_time(time_to_record)
+        
+        #calc the time to start capturing the ball impact
+        print "taking a series of pictures"
+        time_to_impact = calc_ball_impact_time(ms)
+        if time_to_impact > config.CAPTURE_IMPACT_DURATION:
+            time.sleep(time_to_impact - config.CAPTURE_IMPACT_DURATION)
+        
+        #capture a series of images  of the impact
+        camera.capture_image_sequence_time(config.CAPTURE_IMPACT_DURATION)
+
+        #capture a photo after impact config.CAPTURE_AFTER_IMPACT_TIMEOUT seconds after
         print "capture a photo"
-	camera.capture_image()
-	time.sleep(0.01)        
+        camera.capture_image(config.CAPTURE_AFTER_IMPACT_TIMEOUT)
+
+
 if __name__ == "__main__":
     main()

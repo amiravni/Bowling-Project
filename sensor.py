@@ -1,16 +1,27 @@
 import RPi.GPIO as GPIO  
 import time
 import traceback,sys
-  
+import config
+
 t0 = 0.0 #milis
 t1 = 0.0 #milis
-sensor_dist = 0.3 #meters
 
+
+def init():
+    GPIO.setmode(GPIO.BCM)
+    GPIO.setup(config.RPI_GPIO_SENSOR1_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+    GPIO.setup(config.RPI_GPIO_SENSOR2_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+
+def ball_speed_kmh(t0,t1):
+    return 3.6*((config.SENSOR_DIST)/((t1-t0)/1000.0))
+
+def ball_speed_ms(t0,t1):
+    return ((config.SENSOR_DIST)/((t1-t0)/1000.0))
+    
 def interupt_sensor1():
     global t0  
     #print "interupt sensor 1"
     t0 =  time.time() * 1000
-
 
 def interupt_sensor2():
     global t1
@@ -19,25 +30,15 @@ def interupt_sensor2():
 
 def wait_sensors():
 
-        GPIO.setmode(GPIO.BCM)  
-  
-        # GPIO 23 set up as input. It is pulled down to receive the signal form arduino  
-        GPIO.setup(23, GPIO.IN, pull_up_down=GPIO.PUD_UP)  
-        GPIO.setup(25, GPIO.IN, pull_up_down=GPIO.PUD_UP)  
-  
-#        print "Waiting for falling edge on port 23"  
-          
-        # raspi is now not looking for falling but rising edge. so if the digital pin on arduino goes high it triggers the raspi  
         try:  
-            GPIO.wait_for_edge(25, GPIO.FALLING)  
-#            print "\nRising edge detected."  
+            GPIO.wait_for_edge(config.RPI_GPIO_SENSOR1_PIN, GPIO.FALLING)  
             interupt_sensor1()
-            GPIO.wait_for_edge(23, GPIO.FALLING)  
+            GPIO.wait_for_edge(config.RPI_GPIO_SENSOR2_PIN, GPIO.FALLING)  
             interupt_sensor2()
-#            print t1-t0
-            print  3.6*((sensor_dist)/((t1-t0)/1000.0))
+
+            print  ball_speed_kmh(t0,t1)
             GPIO.cleanup()
-            return (sensor_dist)/((t1-t0)/1000.0)
+            return ball_speed_ms(t0,t1)
 	    
         except:  
             print "something happend..."  
@@ -48,5 +49,3 @@ def wait_sensors():
             print '-'*60
 
         GPIO.cleanup()           # clean up GPIO on normal exit 
-        
-#        return None
