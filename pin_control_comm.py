@@ -5,16 +5,23 @@ import protocol
 pin_count_socket = None
 image_socket = None
 config_socket = None
+cmd_socket = None
 
 def init():
     global pin_count_socket
     global image_socket
     global config_socket
+    global cmd_socket
+    
     pin_count_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    
     image_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    
     config_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     config_socket.bind(('',config.COMM_CONFIG_PORT))
-
+    
+    cmd_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    cmd_socket.bind(('',config.COMM_COMMANDS_PORT))
     
 def send_msg(sock,msg,port):
     sock.sendto(msg,(config.HOST_IP, port))

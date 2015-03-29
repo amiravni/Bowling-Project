@@ -20,10 +20,9 @@ def init():
     image_socket.bind(('', config.COMM_IMAGE_PORT))
     print image_socket
 
-def pin_count_is_ready():
-    return  select([pin_count_socket], [], [])
-def image_is_ready():
-    return  select([image_socket], [], [])
+def is_ready(sock):
+    return  len(select([sock], [], [],0)[0]) > 0
+
 
 def send_msg(sock,msg,port):
     sock.sendto(msg,(config.HOST_IP, port))
@@ -41,15 +40,18 @@ def send_jpeg_image(jpeg_image):
 def main():
     global pin_count_socket
     global image_socket
-    init()
-    while True:
-        #if pin_count_is_ready():
-        pin_msg  = recv_msg(pin_count_socket)
-        
-        pin_count,speed = protocol.decode_pin_count_msg(pin_msg)
-        print "Pin count is : %d and speed is : %d" % (pin_count,speed)
-        
-        time.sleep(0.01)
     
+    init()
+    
+    while True:
+
+        if is_ready(pin_count_socket):
+            pin_msg  = recv_msg(pin_count_socket)
+        
+            pin_count,speed = protocol.decode_pin_count_msg(pin_msg)
+            print "Pin count is : %d and speed is : %f" % (pin_count,speed)
+
+        time.sleep(0.01)
+
 if __name__ == "__main__":
     main()

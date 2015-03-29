@@ -56,7 +56,7 @@ def main():
     init()
     
     if config.DEBUG:
-        speed = 24 #kmh
+        speed = 24.51234 #kmh
         impact_image = cv2.imread(create_photo_path(photos_folder,10,19))
         pin_count = calculate_pins.calculate_pin_count(impact_image)
         pin_control_comm.send_pin_count(pin_count,speed)
