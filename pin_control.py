@@ -66,7 +66,7 @@ def main():
             print "ready for some balls"
             
             #get the speed of the ball
-            ms = sensor.wait_sensors()
+            ms,kmh = sensor.wait_sensors()
 
             #calc the time to start capturing the ball impact
             print "taking a series of pictures"
@@ -80,5 +80,11 @@ def main():
             #capture a photo after impact config.CAPTURE_AFTER_IMPACT_TIMEOUT seconds after
             print "capture a photo"
             camera.capture_image_by_time(config.CAPTURE_AFTER_IMPACT_TIMEOUT)
+            impact_image = cv2.imread("after_impact.jpg")
+            pin_count = calculate_pins.calculate_pin_count(impact_image)
+            pin_control_comm.send_pin_count(pin_count,kmh)
+
+            
+            
 if __name__ == "__main__":
     main()

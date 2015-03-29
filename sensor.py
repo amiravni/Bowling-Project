@@ -40,7 +40,7 @@ def wait_sensors():
             
             print  ball_speed_kmh(t0,t1)
             GPIO.cleanup()
-            return ball_speed_ms(t0,t1)
+            return ball_speed_ms(t0,t1),ball_speed_kmh(t0,t1)
         except:  
             print "something happend..."  
             GPIO.cleanup()       # clean up GPIO on CTRL+C exit  

@@ -19,7 +19,7 @@ def capture_image():
         return
     print time.time()
 
-    camera.capture_sequence(([ '%f.jpg' % time.time()] ), use_video_port=True)
+    camera.capture_sequence(([ 'after_impact.jpg' ] ), use_video_port=True)
     
     print time.time()
 
