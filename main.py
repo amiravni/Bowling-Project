@@ -3,6 +3,21 @@ import sensor
 import time
 import config
 
+def check_for_foul():
+    pass
+    
+def calc_ball_speed():
+    pass
+    
+def take_picture_of_impact():
+    pass
+    
+def take_picture_after_impact():
+    pass
+    
+def send_pin_count():
+    pass
+
 
 def calc_ball_impact_time(ball_speed_ms):
     dist = config.DIST_CAMERA_PINS #meters to the pins
