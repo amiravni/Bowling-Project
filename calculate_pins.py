@@ -3,12 +3,16 @@ import config
 import os.path
 
 
-
+def is_bbox_initialized():
+    global pins_bbox
+    
+    return len(pins_bbox) > 0
+    
 def get_pins_bbox():
     
     if not os.path.isfile(config.PINS_BBOX_FILE_PATH):
         print 'Error you need to calibrate your camera'
-        exit(-1)
+        return None
         
     ret = []
     fd = open(config.PINS_BBOX_FILE_PATH,'r')
@@ -27,9 +31,16 @@ def init():
     global pins_bbox
     pins_bbox = get_pins_bbox()
 
-def calculate_pin_count(impact_image):
+def calculate_pin_count(impact_image_path):
     global pins_bbox
     global pin_rgb_sum_count_epsilon
+
+
+    if not os.path.isfile(impact_image_path):
+        print "Error %s not found can't check the pin count!"
+        return
+    
+    impact_image = cv2.imread(impact_image_path)
     
     if impact_image is None:
         return config.FULL_PIN_COUNT
@@ -49,13 +60,12 @@ def calculate_pin_count(impact_image):
         
         if calc_pixels > pin_rgb_sum_count_epsilon:
             pins += 1
-#            if config.DEBUG:
-#                cv2.rectangle(sceneCopy,(pin_bbox[0],pin_bbox[1]),(pin_bbox[0]+pin_bbox[2],pin_bbox[1]+pin_bbox[3]),(0,255,0),1)
-#                cv2.imshow('image',sceneCopy)
+            if config.DEBUG:
+                cv2.rectangle(sceneCopy,(pin_bbox[0],pin_bbox[1]),(pin_bbox[0]+pin_bbox[2],pin_bbox[1]+pin_bbox[3]),(0,255,0),1)
+                cv2.imshow('after impact',sceneCopy)
     if config.DEBUG:
         print 'there are %d pins' % pins
-        #cv2.imshow('after impact',impact_image)
-#        cv2.waitKey(0)
+        cv2.waitKey(0)
     
     return pins
 

@@ -1,6 +1,8 @@
 import socket
-import config
 import protocol
+from select import select
+
+import config
 
 pin_count_socket = None
 image_socket = None
@@ -25,6 +27,10 @@ def init():
     
 def send_msg(sock,msg,port):
     sock.sendto(msg,(config.HOST_IP, port))
+
+def recv_msg(sock_fd):
+    msg,addr = sock_fd.recvfrom(64*1024)
+    return msg
     
 def send_pin_count(pin_count,speed):
     global pin_count_socket
@@ -34,6 +40,16 @@ def send_jpeg_image(jpeg_image):
     global image_socket
     send_msg(image_socket,protocol.encode_jpeg_image(jpeg_image),config.COMM_IMAGE_PORT)
 
+def is_ready(sock):
+    return  len(select([sock], [], [],0)[0]) > 0    
+
+def cmd_sock_is_ready():
+    return is_ready(cmd_socket)
+    
+def recv_cmd_sock():
+    cmd = recv_msg(cmd_socket)
+    return protocol.decode_cmd_msg(cmd)   
+    
 def main():
     global pin_count_socket
     global image_socket

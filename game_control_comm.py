@@ -6,52 +6,57 @@ import config
 import protocol
 
 
-pin_count_socket = None
+throw_info_socket = None
 image_socket = None
+cmd_socket = None
 
 def init():
-    global pin_count_socket
+    global throw_info_socket
     global image_socket
+    global cmd_socket
+    
+    throw_info_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    throw_info_socket.bind(('', config.COMM_PIN_COUNT_PORT))
 
-    pin_count_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    pin_count_socket.bind(('', config.COMM_PIN_COUNT_PORT))
-    print pin_count_socket
     image_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     image_socket.bind(('', config.COMM_IMAGE_PORT))
-    print image_socket
+    
+    cmd_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
 def is_ready(sock):
     return  len(select([sock], [], [],0)[0]) > 0
 
+def throw_info_is_ready():
+    return is_ready(throw_info_socket)
 
+def image_is_ready():
+    return is_ready(image_socket)
+    
 def send_msg(sock,msg,port):
     sock.sendto(msg,(config.HOST_IP, port))
+
+def send_cmd_msg(msg):
+    cmd_msg = protocol.encode_cmd_msg(msg)
+    send_msg(cmd_socket,cmd_msg,config.COMM_COMMANDS_PORT)
+
+def send_calib_data(calib_data):
+    msg = 'calib_result,%s'% calib_data    
+    send_msg(cmd_socket,msg,config.COMM_COMMANDS_PORT)
 
 def recv_msg(sock_fd):
     msg,addr = sock_fd.recvfrom(64*1024)
     return msg
-
+    
+def recv_throw_info():
+    throw_info = protocol.decode_throw_info_msg(recv_msg(throw_info_socket))
+    return throw_info
+    
+def recv_image():
+    img = protocol.decode_jpeg_image(recv_msg(image_socket))
+    return img
+    
 def main():
-    global pin_count_socket
-    global image_socket
-    
-    init()
-    
-    while True:
-
-        if is_ready(pin_count_socket):
-            pin_msg  = recv_msg(pin_count_socket)
-        
-            pin_count,speed = protocol.decode_pin_count_msg(pin_msg)
-            print "Pin count is : %d and speed is : %f" % (pin_count,speed)
-
-        if is_ready(image_socket):
-            img_msg = recv_msg(image_socket)
-            img = protocol.decode_jpeg_image(img_msg)
-            img_fd = open('base_image_game_control.jpg','wb')
-            img_fd.write(img)
-            img_fd.close()
-        time.sleep(0.01)
+    pass
 
 if __name__ == "__main__":
     main()

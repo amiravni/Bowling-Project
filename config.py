@@ -1,5 +1,5 @@
 
-DEBUG = False
+DEBUG = True
 
 #COMM
 HOST_IP = '10.0.0.1'
