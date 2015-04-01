@@ -122,7 +122,14 @@ def main():
             elif cmd_msg.startswith(protocol.CALIB_RESULT_CMD):
                 if len(cmd_msg) > (len(protocol.CALIB_RESULT_CMD) + 1):
                     result = cmd_msg[len(protocol.CALIB_RESULT_CMD)+1:]
-                    print "The calib result is : %s" % result
+                    print "The calib result is : %s" % eval(result)
+                    rects = eval(result)
+                    fd = open(config.PINS_BBOX_FILE_PATH,'w')
+                    for rect in rects:
+                        print >> fd, rect
+                    fd.close()
+                    
+                    calculate_pins.init()
                 else:
                     print 'Problem getting the calib result'
 
