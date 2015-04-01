@@ -28,11 +28,13 @@ class MyFrame(wx.Frame):
         btn_check_calib = wx.Button(panel, -1, "check calib")
 
         btn_start_game = wx.Button(panel, -1, "Start game")
-
+        btn_stop_game = wx.Button(panel, -1, "Stop game")
+        
         # bind the button events to handlers
         self.Bind(wx.EVT_BUTTON, self.OnStartCalib, btn_start_calib)
         self.Bind(wx.EVT_BUTTON, self.OnCheckCalib, btn_check_calib)
         self.Bind(wx.EVT_BUTTON, self.OnStartGame, btn_start_game)
+        self.Bind(wx.EVT_BUTTON, self.OnStopGame, btn_stop_game)
 
         # Use a sizer to layout the controls, stacked vertically and with
         # a 10 pixel border around each
@@ -40,6 +42,7 @@ class MyFrame(wx.Frame):
         sizer.Add(btn_start_calib, 0, wx.ALL, 10)
         sizer.Add(btn_check_calib, 0, wx.ALL, 10)
         sizer.Add(btn_start_game, 0, wx.ALL, 10)
+        sizer.Add(btn_stop_game, 0, wx.ALL, 10)
 
         panel.SetSizer(sizer)
         panel.Layout()
@@ -56,6 +59,10 @@ class MyFrame(wx.Frame):
     def OnStartGame(self,evt):
         print "Start a game"
         game_control_comm.send_cmd_msg(protocol.START_GAME_CMD)
+
+    def OnStopGame(self,evt):
+        print "Stop the game"
+        game_control_comm.send_cmd_msg(protocol.STOP_GAME_CMD)
 
 
 class MyApp(wx.App):

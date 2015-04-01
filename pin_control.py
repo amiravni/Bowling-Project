@@ -32,12 +32,13 @@ def send_pin_count():
 
 
 def play_game():
+    global goOn
     if config.DEBUG:
-    
-        speed = 24.51234 #kmh
-        impact_image = cv2.imread(create_photo_path(photos_folder,10,19))
-        pin_count = calculate_pins.calculate_pin_count(impact_image)
-        pin_control_comm.send_pin_count(pin_count,speed)
+        while goOn:
+            #impact_image = cv2.imread(create_photo_path(photos_folder,10,19))
+            #pin_count = calculate_pins.calculate_pin_count(impact_image)
+            pin_control_comm.send_pin_count(random.randint(0,10),random.uniform(0,40))
+            time.sleep(1)
     else:
 
         while goOn:
@@ -87,6 +88,7 @@ def create_photo_path(folder,scene,id):
     
     
 def main():
+    global goOn
     init()
     
     while True:
@@ -109,8 +111,14 @@ def main():
                     base_image_comp = open('base_image_comp.jpg','rb').read()
                     
                     pin_control_comm.send_jpeg_image(base_image_comp)
-            elif cmd_msg == protocol.START_GAME_CMD:               
-                pin_control_comm.send_pin_count(random.randint(0,10),random.uniform(0,40))
+            elif cmd_msg == protocol.START_GAME_CMD:
+                print 'Starting the game'
+                goOn = True
+                #pin_control_comm.send_pin_count(random.randint(0,10),random.uniform(0,40))
+                thread.start_new_thread(play_game, ())
+            elif cmd_msg == protocol.STOP_GAME_CMD:
+                print 'Stoping the game'
+                goOn = False
             elif cmd_msg.startswith(protocol.CALIB_RESULT_CMD):
                 if len(cmd_msg) > (len(protocol.CALIB_RESULT_CMD) + 1):
                     result = cmd_msg[len(protocol.CALIB_RESULT_CMD)+1:]
@@ -119,7 +127,6 @@ def main():
                     print 'Problem getting the calib result'
 
         time.sleep(0.01)
-#    thread.start_new_thread(play_game, ())
     
 
 
