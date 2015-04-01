@@ -58,9 +58,9 @@ def play_game():
 
             #capture a photo after impact config.CAPTURE_AFTER_IMPACT_TIMEOUT seconds after
             print "capture a photo"
-            camera.capture_image_by_time('after_impact.jpg',config.CAPTURE_AFTER_IMPACT_TIMEOUT)
-            impact_image = cv2.imread("after_impact.jpg")
-            pin_count = calculate_pins.calculate_pin_count(impact_image)
+            camera.capture_image_by_time('after_impact',config.CAPTURE_AFTER_IMPACT_TIMEOUT)
+            #impact_image = cv2.imread('after_impact.jpg')
+            pin_count = calculate_pins.calculate_pin_count('after_impact.jpg')
             pin_control_comm.send_pin_count(pin_count,kmh)
     
 def calc_ball_impact_time(ball_speed_ms):
