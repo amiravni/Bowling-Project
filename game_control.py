@@ -54,7 +54,7 @@ class MyFrame(wx.Frame):
 
     def OnCheckCalib(self,evt):
         calculate_pins.init()
-        calculate_pins.calculate_pin_count('base_image_game_control.jpg')
+        calculate_pins.check_calibration('base_image_game_control.jpg')
 
     def OnStartGame(self,evt):
         print "Start a game"

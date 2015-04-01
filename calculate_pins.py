@@ -31,6 +31,42 @@ def init():
     global pins_bbox
     pins_bbox = get_pins_bbox()
 
+def check_calibration(base_image_path):
+    global pins_bbox
+    global pin_rgb_sum_count_epsilon
+    
+    if not os.path.isfile(base_image_path):
+        print "Error %s not found can't check the pin count!"
+        return
+    
+    base_image = cv2.imread(base_image_path)
+    
+    if base_image is None:
+        print 'Error loading image %s' % base_image_path
+        return
+    
+    pins = 0
+    
+
+    sceneCopy = base_image.copy()
+    
+    for pin_bbox in pins_bbox:
+        
+        pin_rect = base_image[pin_bbox[1]:pin_bbox[1]+pin_bbox[3],pin_bbox[0]:pin_bbox[0]+pin_bbox[2]]
+        calc_pixels = 0
+        for x in pin_rect:
+            for y in x:
+                calc_pixels += sum(y)
+        
+        if calc_pixels > pin_rgb_sum_count_epsilon:
+            pins += 1
+
+            cv2.rectangle(sceneCopy,(pin_bbox[0],pin_bbox[1]),(pin_bbox[0]+pin_bbox[2],pin_bbox[1]+pin_bbox[3]),(0,255,0),1)
+            cv2.imshow('base',sceneCopy)
+
+    print 'there are %d pins' % pins
+    cv2.waitKey(0)
+        
 def calculate_pin_count(impact_image_path):
     global pins_bbox
     global pin_rgb_sum_count_epsilon
