@@ -62,7 +62,10 @@ def play_game():
             #impact_image = cv2.imread('after_impact.jpg')
             pin_count = calculate_pins.calculate_pin_count('after_impact.jpg')
             pin_control_comm.send_pin_count(pin_count,kmh)
-    
+
+            os.system('count=`ls  -lah | grep drw | wc -l`;mkdir $count;mv *.jpg ./$count/')
+
+            
 def calc_ball_impact_time(ball_speed_ms):
     if ball_speed_ms is not None:
         dist = config.DIST_CAMERA_PINS #meters to the pins
