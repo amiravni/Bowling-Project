@@ -1,18 +1,29 @@
-#----------------------------------------------------------------------
-# A very simple wxPython example.  Just a wx.Frame, wx.Panel,
-# wx.StaticText, wx.Button, and a wx.BoxSizer, but it shows the basic
-# structure of any wxPython application.
-#----------------------------------------------------------------------
- 
 import wx
 import thread
 import game_control_comm
 import protocol
 import get_pins_position
 import calculate_pins
-import game_mode
+import facebook_api
 
-class MyFrame(wx.Frame):
+class player():
+
+    username = ''
+    name = ''
+    raw_data = []
+
+    def __init__(self,raw_data):
+        self.name = raw_data['name']
+        self.username = raw_data['username']
+
+
+class player_gui():
+    player = None    
+    lbl_username = None
+    pic_profile = None
+    box = None
+    
+class game_mode_frame(wx.Frame):
     """
     This is MyFrame.  It just shows a few controls on a wxPanel,
     and has a simple menu.
@@ -25,25 +36,44 @@ class MyFrame(wx.Frame):
         # Now create the Panel to put the other controls on.
         panel = wx.Panel(self)
 
-        btn_start_calib = wx.Button(panel, -1, "Start calib")
-        btn_check_calib = wx.Button(panel, -1, "check calib")
 
-        btn_start_game = wx.Button(panel, -1, "Start game")
-        btn_stop_game = wx.Button(panel, -1, "Stop game")
-                
-        # bind the button events to handlers
-        self.Bind(wx.EVT_BUTTON, self.OnStartCalib, btn_start_calib)
-        self.Bind(wx.EVT_BUTTON, self.OnCheckCalib, btn_check_calib)
-        self.Bind(wx.EVT_BUTTON, self.OnStartGame, btn_start_game)
-        self.Bind(wx.EVT_BUTTON, self.OnStopGame, btn_stop_game)
+        users = ['danny.wainshtein','avni314','mark']
+        players_gui = []
+        for username in users:
+            p = player(facebook_api.get_user_data(username))
+            
+            pg = player_gui()
+            pg.player = p
+            pg.lbl_username = wx.StaticText(panel, label=p.name)
+            img = wx.Image(facebook_api.get_user_picture_path(p.username), wx.BITMAP_TYPE_ANY)
+            img = img.Scale(100,100)
+            pg.pic_profile = wx.StaticBitmap(panel, -1, wx.BitmapFromImage(img))     
+
+            
+
+
+            players_gui.append(pg)
 
         # Use a sizer to layout the controls, stacked vertically and with
         # a 10 pixel border around each
         sizer = wx.BoxSizer(wx.VERTICAL)
-        sizer.Add(btn_start_calib, 0, wx.ALL, 10)
-        sizer.Add(btn_check_calib, 0, wx.ALL, 10)
-        sizer.Add(btn_start_game, 0, wx.ALL, 10)
-        sizer.Add(btn_stop_game, 0, wx.ALL, 10)
+
+        for pg in players_gui:
+            pg.box = wx.BoxSizer()
+            profile_box = wx.BoxSizer(wx.VERTICAL)
+            profile_box.Add(pg.lbl_username, 0, wx.ALL)
+            profile_box.Add(pg.pic_profile, 0, wx.ALL)
+            pg.box.Add(profile_box, 0, wx.ALL)
+            
+            sizer.Add(pg.box)
+            
+        
+        players_gui[0].box.Add(wx.StaticText(panel, label="1"),0,wx.ALL,50)
+        players_gui[0].box.Add(wx.StaticText(panel, label="/"),0,wx.ALL,50)
+        players_gui[1].box.Add(wx.StaticText(panel, label="8"),0,wx.ALL,50)
+        players_gui[1].box.Add(wx.StaticText(panel, label="7"),0,wx.ALL,50)
+        players_gui[2].box.Add(wx.StaticText(panel, label="0"),0,wx.ALL,50)
+        players_gui[2].box.Add(wx.StaticText(panel, label="0"),0,wx.ALL,50)
 
         panel.SetSizer(sizer)
         panel.Layout()
@@ -60,26 +90,21 @@ class MyFrame(wx.Frame):
     def OnStartGame(self,evt):
         print "Start a game"
         game_control_comm.send_cmd_msg(protocol.START_GAME_CMD)
-        
-        game_mode_app = game_mode.game_mode_app()
-        game_mode_app.MainLoop()
-        
+
     def OnStopGame(self,evt):
         print "Stop the game"
         game_control_comm.send_cmd_msg(protocol.STOP_GAME_CMD)
 
 
-class MyApp(wx.App):
+class game_mode_app(wx.App):
     
     game_loop_working = True
 
     def OnInit(self):
         game_control_comm.init()
         
-        frame = MyFrame(None, "Control panel")
+        frame = game_mode_frame(None, "Game window")
         self.SetTopWindow(frame)
-
-        print "Print statements go to this stdout window by default."
 
         thread.start_new_thread(self.game_control_loop, ())
 
@@ -101,5 +126,5 @@ class MyApp(wx.App):
                 calib_res = get_pins_position.calib_camera('base_image_game_control.jpg')
                 game_control_comm.send_calib_data(str(calib_res))
         
-app = MyApp(redirect=True)
-app.MainLoop()
+#app = game_mode_app(redirect=True)
+#app.MainLoop()
