@@ -23,6 +23,9 @@ class player_gui():
     pic_profile = None
     box = None
     
+    def add_score(self,panel,score):
+        self.box.Add(wx.StaticText(panel, label="  " + str(score)),0,wx.TOP,50)
+    
 class game_mode_frame(wx.Frame):
     """
     This is MyFrame.  It just shows a few controls on a wxPanel,
@@ -49,9 +52,6 @@ class game_mode_frame(wx.Frame):
             img = img.Scale(100,100)
             pg.pic_profile = wx.StaticBitmap(panel, -1, wx.BitmapFromImage(img))     
 
-            
-
-
             players_gui.append(pg)
 
         # Use a sizer to layout the controls, stacked vertically and with
@@ -67,13 +67,7 @@ class game_mode_frame(wx.Frame):
             
             sizer.Add(pg.box)
             
-        
-        players_gui[0].box.Add(wx.StaticText(panel, label="1"),0,wx.ALL,50)
-        players_gui[0].box.Add(wx.StaticText(panel, label="/"),0,wx.ALL,50)
-        players_gui[1].box.Add(wx.StaticText(panel, label="8"),0,wx.ALL,50)
-        players_gui[1].box.Add(wx.StaticText(panel, label="7"),0,wx.ALL,50)
-        players_gui[2].box.Add(wx.StaticText(panel, label="0"),0,wx.ALL,50)
-        players_gui[2].box.Add(wx.StaticText(panel, label="0"),0,wx.ALL,50)
+        players_gui[0].add_score(panel,1)
 
         panel.SetSizer(sizer)
         panel.Layout()
