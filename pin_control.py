@@ -1,5 +1,5 @@
 import time
-
+import os
 import config
 import pin_control_comm
 import calculate_pins
@@ -34,10 +34,25 @@ def send_pin_count():
 def play_game():
     global goOn
     if config.DEBUG:
+        first_shot = True #only for testing         
         while goOn:
             #impact_image = cv2.imread(create_photo_path(photos_folder,10,19))
             #pin_count = calculate_pins.calculate_pin_count(impact_image)
-            pin_control_comm.send_pin_count(random.randint(0,10),random.uniform(0,40))
+            if first_shot:            
+                random_pin_count = random.randint(0,10)
+                random_speed = random.uniform(0,40)            
+                pin_control_comm.send_pin_count(random_pin_count,random_speed)
+                print 'first shot'                
+                print 'sending pin count :',random_pin_count,'ball speed :',random_speed
+                if not random_pin_count == 10:
+                    first_shot = False
+            else:
+                random_pin_count2 = random.randint(0,(10 - random_pin_count))
+                random_speed = random.uniform(0,40)            
+                pin_control_comm.send_pin_count(random_pin_count2,random_speed)
+                print 'second shot'                
+                print 'sending pin count :',random_pin_count2,'ball speed :',random_speed
+                first_shot = True
             time.sleep(1)
     else:
 
