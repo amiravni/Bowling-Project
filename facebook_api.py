@@ -27,7 +27,8 @@ def get_user_data(username):
         print 'Error fetching user data'
         return {'username':username,'name':username}
 
-    user_data_dic = json.loads(user_data_json)    
+    user_data_dic = json.loads(user_data_json)
+    user_data_dic['username'] = username
     return user_data_dic
 
 #TODO
